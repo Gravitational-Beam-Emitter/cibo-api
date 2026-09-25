@@ -1,0 +1,167 @@
+# cibo.hk — HK IPO Allotment Forecasts & Allottee-Profile Analysis
+
+> Built by JW, CEO of Panda Securities, using AI-assisted programming.
+> Forecasts IPO allotment hit rates — with adjustable subscription
+> multiples and allotment-method (α) parameters — and infers allottee
+> profiles (region / nationality / gender / age) from registrar ID data,
+> plus Stock Connect inclusion analysis, allotment results, and more.
+
+## Quickstart for AI Agents
+
+**Base URL:** https://cibo.hk
+**API Prefix:** `/api`
+**Content-Type:** application/json
+
+### Authentication
+
+All public IPO data endpoints are open — no API key or JWT required.
+Free-tier rate limits: 30 requests/min per IP, 5,000 requests/day.
+
+Optional: personalized features (watchlist, preferences) use a pcell.si JWT
+— see /.well-known/agent-protocol for the optional auth flow.
+
+### Python SDK (pcell.si community, optional)
+
+`pcell-sdk` (pip install pcell-sdk) is for pcell.si community features only.
+It is NOT required to access cibo IPO data — all data endpoints are public.
+PyPI: https://pypi.org/project/pcell-sdk/
+Repo: https://github.com/pcell-si/pcell-sdk
+
+### MCP Server (remote Streamable HTTP, no install)
+
+57 tools covering the whole site's data: allotment prediction, stocks, inclusion, rankings, A/B comparison, market data, flash events, disclosures (buyback / interest / suspension / earnings / directors / corporate actions), full-market financials and company directory, prices, registrar research, blog posts, hynix arbitrage, A-share ETF flow, and data-center macro / US-market data.
+
+- **Endpoint:** https://cibo.hk/mcp
+- **Transport:** streamable-http
+- **Description:** Remote Streamable HTTP MCP server for cibo.hk — lets AI agents query HK IPO allotment, predictions, prospectus details, allotment results (incl. international placing), inclusion, rankings, disclosures, financials, registrar, blog, full-market directory, hynix arbitrage, A-share ETF flow, and data-center macro/US-market data directly.
+
+```json
+{
+  "mcpServers": {
+    "cibo": {
+      "url": "https://cibo.hk/mcp"
+    }
+  }
+}
+```
+
+---
+
+## API Endpoints (47 total)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/stocks` | public | List all IPO stocks with basic info (code, name, listing date). |
+| GET | `/api/stocks/oversub` | public | Batch oversubscription + frozen capital for all stocks with allotment data. Query: ?year=2026. |
+| GET | `/api/flash-events` | public | Derived flash-event feed (ipo_launch / allotment_result / listing / inclusion / prediction) as structured JSON for AI crawlers. Query: ?locale=zh-CN&limit=50&stock_code=07688. |
+| GET | `/api/stocks/index` | public | Stock cards grouped by index with filtering, pagination, search. |
+| GET | `/api/stocks/{code}/overview` | public | Full per-stock IPO analysis: subscription rates, allotment tiers, PnL scenarios, CCASS demographics. |
+| GET | `/api/stocks/{code}/prospectus` | public | Full prospectus info page data: prospectus details (offer price, mechanism, greenshoe, secondary listing), cornerstone investors, and IPO financial statements. |
+| GET | `/api/stocks/{code}/allotment-result` | public | Full allotment results page data: allotment summary (incl. international placing, greenshoe), placing concentration, cornerstone allocation + lock-up, Pool A/B tiers. |
+| GET | `/api/stocks/{code}/allottee-profile` | public | 中签画像 (allottee profile): winner demographics from the registrar allotment dataset — total lots, person/company split, region/nationality, province, gender, age histogram + pyramid, HK ID letter/era/district. |
+| GET | `/api/stocks/{code}/announcements` | public | 个股公告中心 (announcement center): all HKEXnews announcements for one stock, grouped by headline category with publish date and file URL. |
+| GET | `/api/stocks/{code}/buyback` | public | 回购明细 (per-stock buyback): share buyback records for one stock, newest first, with per-day shares/amount and aggregate totals. |
+| GET | `/api/stocks/{code}/disclosure` | public | 增减持明细 (per-stock disclosure-of-interest): DI records for one stock, newest first, with holder, capacity, event type, shares and pct. |
+| GET | `/api/stocks/{code}/summary` | public | Lightweight stock summary: key stats and tier classification. |
+| GET | `/api/stocks/{code}/ccass` | public | CCASS custodian demographics: type, province, gender, age distributions. |
+| GET | `/api/stocks/{code}/narrative` | public | AI-generated narrative (zh/en) summarizing the IPO's key characteristics. |
+| GET | `/api/stocks/compare` | public | Side-by-side comparison of up to 10 stocks. Query: ?codes=00001,00002 |
+| GET | `/api/allotment-tiers/{code}` | public | Detailed allotment tier table: Pool A and Pool B subscription tiers with expected lots. |
+| GET | `/api/stocks/{code}/predict` | public | Full allotment prediction data (default predicted oversub/alpha) backing the prediction page. |
+| GET | `/api/stocks/{code}/predict/custom` | public | On-demand single-point allotment prediction for arbitrary parameters. Query: ?oversub=300&alpha=0.5&agent=knn_calibrated. |
+| GET | `/api/predict-agent-grid/{code}` | public | Pre-computed prediction grid (18 oversub x 5 alpha) for interpolation. |
+| GET | `/api/listing-day-close-price/{code}` | public | First-day closing price for a single stock. |
+| GET|POST | `/api/listing-day-close-prices-batch` | public | Batch first-day closing prices. GET: ?codes=07688,01511 POST: {"codes":[...]} |
+| GET | `/api/market-insights` | public | Cross-IPO market insights, trends, and aggregate analysis. |
+| GET | `/api/cmp/overview` | public | Cross-market comparison overview for peer stock context. |
+| GET | `/api/charts/frozen-calendar` | public | Frozen capital calendar: date series, daily max, regulatory milestones (for index page stacked bar chart). |
+| GET | `/api/charts/scatter-oversub-pnl` | public | Oversubscription vs first-day P&L scatter plot data. |
+| GET | `/api/cache/rankings/sponsors` | public | Sponsor institution rankings by IPO involvement. |
+| GET | `/api/cache/rankings/underwriters` | public | Underwriter institution rankings by IPO involvement. |
+| GET | `/api/cache/rankings/cornerstone` | public | Cornerstone investor rankings. |
+| GET | `/api/cache/rankings/coinvestment` | public | Co-investment rankings. |
+| GET | `/api/cache/stocks/{code}/analysis` | public | Pre-computed per-stock analysis (tier data, demographic distributions, HK letter/era breakdowns). |
+| GET | `/api/cache/ab` | public | A-tail vs B-head comparison matrix. |
+| GET | `/api/cache/frozen-calendar` | public | Pre-computed frozen capital calendar (dates, series, max_daily). |
+| GET | `/api/cache/scatter` | public | Pre-computed scatter plot data (oversubscription vs P&L). |
+| GET | `/api/cache/status` | public | Freshness status for all cache tables (row count, last_built timestamp). |
+| GET | `/api/blog/posts` | public | List published blog posts with pagination. Query: ?locale=zh-CN&limit=20&offset=0 |
+| GET | `/api/blog/posts/{slug}` | public | Get a single published blog post by slug. |
+| GET | `/api/stocks/full-market` | public | Directory of all HK-listed companies (code, zh/en name, board, isin). Query: ?search=&limit=200. |
+| GET | `/api/hynix/snapshot` | public | SK Hynix cross-market arbitrage snapshot (instruments with premium_pct, FX rates, base price). |
+| GET | `/api/a-share-etf/overview` | public | A-share ETF capital flow overview (merged proxy, ETF inflow, margin). Query: ?limit=60. |
+| GET | `/api/user/me` | optional JWT | Current user info from JWT. Returns {user: null} when unauthenticated. |
+| GET | `/api/user/watchlist` | pcell JWT | User's watchlist as array of stock codes. |
+| POST | `/api/user/watchlist/{code}` | pcell JWT | Toggle a stock in/out of the watchlist. Returns {in_watchlist: bool}. |
+| GET|PUT | `/api/user/preferences` | pcell JWT | Get or update saved user preferences JSON. |
+| GET | `/api/` | public | API discovery root: lists all endpoints with methods, auth, and return types. |
+| GET | `/.well-known/agent-protocol` | public | Machine-readable agent protocol: service description, auth methods, data categories, recommended agent onboarding flow. |
+| GET | `/health` | public | Health check: uptime, DB stats, agent status, cache warmth, pipeline health. |
+| GET | `/api/agents` | internal | Internal agent heartbeat status and duration (ops telemetry). |
+
+## Query Parameters
+### /api/stocks/oversub
+- `year` — optional listing year filter (e.g. 2026)
+### /api/flash-events
+- `locale` — zh-CN / zh-HK / en
+- `limit` — max events (1-200, default 50)
+- `stock_code` — optional 5-digit code to filter to one stock
+### /api/stocks/compare
+- `codes` — comma-separated stock codes
+### /api/stocks/{code}/predict/custom
+- `oversub` — final oversubscription multiple (optional, >0; omitted -> cibo predicted oversub)
+- `alpha` — allocation-method coefficient in [0,1] (optional; omitted -> agent's recommended alpha)
+- `agent` — agent key (optional, default knn_calibrated)
+### /api/stocks/full-market
+- `search` — optional substring on code/name
+- `limit` — max companies (default 200)
+
+---
+
+## Agent Workflow
+
+1. **Discover** — Read this file or GET /api/
+2. **List stocks** — GET /api/stocks to see available IPO stocks
+3. **Analyze** — GET /api/stocks/{code}/overview for full per-stock analysis
+4. **Predict** — GET /api/stocks/{code}/predict for allotment forecast
+5. **Compare** — GET /api/stocks/compare?codes=A,B to compare multiple stocks
+6. **MCP** — Connect to https://cibo.hk/mcp for 57 tools (no install)
+
+Full API reference: https://cibo.hk/api/
+Agent protocol: https://cibo.hk/.well-known/agent-protocol
+
+---
+
+## Site Pages (GEO)
+
+Static SSR pages for crawlers. Locales: zh-CN / zh-HK / en. `{code}` = 5-digit stock code.
+
+Disclosure (HKEXnews Phase 1):
+- 股份回购榜: https://cibo.hk/zh-CN/all-buybacks.html
+- 大股东增减持: https://cibo.hk/zh-CN/disclosure-interest.html
+- 停牌复牌: https://cibo.hk/zh-CN/suspension-resumption.html
+- 财报日历: https://cibo.hk/zh-CN/earnings-calendar.html
+- 董事变动: https://cibo.hk/zh-CN/director-change.html
+- 供股配售/股本变动: https://cibo.hk/zh-CN/corporate-actions.html
+
+Per-stock disclosure pages:
+- 公告中心: https://cibo.hk/zh-CN/announcement-{code}.html
+- 回购明细: https://cibo.hk/zh-CN/buyback-{code}.html
+- 增减持明细: https://cibo.hk/zh-CN/disclosure-{code}.html
+
+IPO allotment:
+- 首页: https://cibo.hk/zh-CN/index.html
+- 单股分析: https://cibo.hk/zh-CN/ipo-analysis-{code}.html
+- 配发结果: https://cibo.hk/zh-CN/ipo-allotment-results-{code}.html
+
+Derived flash events (Cibo快讯):
+- Cibo快讯流: https://cibo.hk/zh-CN/flash-news.html
+- 个股Cibo快讯: https://cibo.hk/zh-CN/flash-news-{code}.html
+- 快讯 JSON feed: https://cibo.hk/api/flash-events?locale=zh-CN&limit=50
+  (structured derived events: ipo_launch / allotment_result / listing /
+   inclusion / prediction / buyback / earnings / dividend / disclosure_interest;
+   each with stock_code, summary, metrics, url)
+
+Full-market financials:
+- 港股公司目录: https://cibo.hk/zh-CN/all-hk-stocks.html
+- 单股财务: https://cibo.hk/zh-CN/stock-financial-{code}.html
