@@ -29,7 +29,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
-            git add llms.txt README.md
+            git add llms.txt openapi.json README.md
             git commit -m "docs: auto-sync from cibo.hk"
             git push
           else

@@ -1,0 +1,1562 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "cibo.hk — HK IPO Allotment Forecasts & Allottee-Profile Analysis",
+    "version": "1.0.0",
+    "description": "Public HK IPO data API: allotment forecasts, allottee profiles, prospectus details, allotment results, inclusion analysis, rankings, disclosures, full-market directory, and cross-market data. No API key required. See https://cibo.hk/llms.txt for the agent discovery doc and https://cibo.hk/mcp for the MCP server.",
+    "x-mcp": "https://cibo.hk/mcp",
+    "x-llms": "https://cibo.hk/llms.txt"
+  },
+  "paths": {
+    "/api/stocks": {
+      "get": {
+        "summary": "List Stocks",
+        "description": "List all stocks with basic info.",
+        "operationId": "get_api_stocks",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/oversub": {
+      "get": {
+        "summary": "Stocks Oversub",
+        "description": "Return oversubscription + frozen capital for stocks with allotment data.\n\nReads the pre-computed stock_analysis_cache (same values as\n/api/stocks/{code}/overview) in one query. Optional ?year=2026 filters\nby listing year.",
+        "operationId": "get_api_stocks_oversub",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Year"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/flash-events": {
+      "get": {
+        "summary": "Flash Events",
+        "description": "Machine-readable derived flash-event feed (objective, no investment advice).\n\nPublic endpoint: AI crawlers and the cibohk frontend read this JSON directly\ninstead of parsing HTML. Query: ?locale=zh-CN&limit=50&stock_code=07688",
+        "operationId": "get_api_flash-events",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "stock_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Stock Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/index": {
+      "get": {
+        "summary": "Stocks Index",
+        "description": "Return stock card data (normal, recent, prelist) for the index page.\n\nSupports server-side filtering and pagination on the normal array.\nRecent and prelist arrays are always returned in full.",
+        "operationId": "get_api_stocks_index",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 22,
+              "title": "Per Page"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Search"
+            }
+          },
+          {
+            "name": "industry",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Industry"
+            }
+          },
+          {
+            "name": "mechanism",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Mechanism"
+            }
+          },
+          {
+            "name": "oversub",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Oversub"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Year"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/compare": {
+      "get": {
+        "summary": "Stocks Compare",
+        "description": "Return enriched stock data for comparison.\n\nAccepts comma-separated stock codes. Returns detailed fields from\nprospectus_details + allotment_summary + stocks + listing_day_close_prices.",
+        "operationId": "get_api_stocks_compare",
+        "parameters": [
+          {
+            "name": "codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Codes"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/overview": {
+      "get": {
+        "summary": "Stock Overview",
+        "description": "Get stock overview data.",
+        "operationId": "get_api_stocks_code_overview",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/summary": {
+      "get": {
+        "summary": "Stock Summary",
+        "description": "Get stock summary stats only (faster than /overview).",
+        "operationId": "get_api_stocks_code_summary",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/ccass": {
+      "get": {
+        "summary": "Stock Ccass",
+        "description": "Get CCASS demographics for a stock.",
+        "operationId": "get_api_stocks_code_ccass",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/narrative": {
+      "get": {
+        "summary": "Stock Narrative",
+        "description": "Get AI-generated narrative for a stock (cached from ai_narratives table).",
+        "operationId": "get_api_stocks_code_narrative",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/predict": {
+      "get": {
+        "summary": "Stock Predict",
+        "description": "Return full prediction data for a stock (allotment prediction page).\n\nWraps gen_allotment_predict.build_predict_data(). The *_json string fields\nare parsed into objects so the BFF/frontend consumes plain JSON.",
+        "operationId": "get_api_stocks_code_predict",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/market-insights": {
+      "get": {
+        "summary": "Market Insights",
+        "description": "Return cross-IPO market insights (computed by gen_market_insights.py).",
+        "operationId": "get_api_market-insights",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cmp/overview": {
+      "get": {
+        "summary": "Cmp Overview",
+        "description": "Cross-IPO comparison overview data.",
+        "operationId": "get_api_cmp_overview",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/charts/frozen-calendar": {
+      "get": {
+        "summary": "Frozen Calendar",
+        "description": "Return frozen capital calendar data for the index page stacked bar chart.",
+        "operationId": "get_api_charts_frozen-calendar",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/charts/scatter-oversub-pnl": {
+      "get": {
+        "summary": "Scatter Oversub Pnl",
+        "description": "Return oversubscription vs first-day P&L scatter data for the index page.",
+        "operationId": "get_api_charts_scatter-oversub-pnl",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/stocks/{code}/analysis": {
+      "get": {
+        "summary": "Cache Stock Analysis",
+        "description": "Return pre-computed per-stock analysis from cache.",
+        "operationId": "get_api_cache_stocks_code_analysis",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/ab": {
+      "get": {
+        "summary": "Cache Ab",
+        "description": "Return pre-computed A-tail vs B-head comparison data.",
+        "operationId": "get_api_cache_ab",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/frozen-calendar": {
+      "get": {
+        "summary": "Cache Frozen Calendar",
+        "description": "Return pre-computed frozen capital calendar data.",
+        "operationId": "get_api_cache_frozen-calendar",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/scatter": {
+      "get": {
+        "summary": "Cache Scatter",
+        "description": "Return pre-computed scatter plot data (oversub vs P&L).",
+        "operationId": "get_api_cache_scatter",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/rankings/sponsors": {
+      "get": {
+        "summary": "Cache Sponsor Rank",
+        "operationId": "get_api_cache_rankings_sponsors",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/rankings/underwriters": {
+      "get": {
+        "summary": "Cache Underwriter Rank",
+        "operationId": "get_api_cache_rankings_underwriters",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/rankings/cornerstone": {
+      "get": {
+        "summary": "Cache Cornerstone Rank",
+        "operationId": "get_api_cache_rankings_cornerstone",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/rankings/coinvestment": {
+      "get": {
+        "summary": "Cache Cornerstone Coinvest",
+        "operationId": "get_api_cache_rankings_coinvestment",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cache/status": {
+      "get": {
+        "summary": "Cache Status",
+        "description": "Return cache freshness status for all cache tables.",
+        "operationId": "get_api_cache_status",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/blog/posts": {
+      "get": {
+        "summary": "Public List Blog Posts",
+        "operationId": "get_api_blog_posts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/blog/posts/{slug}": {
+      "get": {
+        "summary": "Public Get Blog Post",
+        "operationId": "get_api_blog_posts_slug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/full-market": {
+      "get": {
+        "summary": "Public Full Market List",
+        "description": "Directory of all HK-listed companies (code, zh/en name, board, isin).",
+        "operationId": "get_api_stocks_full-market",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hynix/snapshot": {
+      "get": {
+        "summary": "Public Hynix Snapshot",
+        "description": "SK Hynix cross-market arbitrage snapshot (instruments, FX rates, base price).",
+        "operationId": "get_api_hynix_snapshot",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/a-share-etf/overview": {
+      "get": {
+        "summary": "Public A Share Etf Overview",
+        "description": "A-share ETF capital flow overview (merged proxy, ETF inflow, margin).",
+        "operationId": "get_api_a-share-etf_overview",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listing-day-close-price/{code}": {
+      "get": {
+        "summary": "Get Listing Day Close Price",
+        "description": "Return listing day close price for a stock code (public, used by page JS).",
+        "operationId": "get_api_listing-day-close-price_code",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listing-day-close-prices-batch": {
+      "get": {
+        "summary": "Get Listing Day Close Prices Batch",
+        "description": "Return listing-day close prices for multiple stocks (public, used by index page JS).\n\nGET:  ?codes=07688,01511 (small batches)\nPOST: {\"codes\": [\"07688\", \"01511\", ...]} (large batches, avoids URL length limit)",
+        "operationId": "get_api_listing-day-close-prices-batch",
+        "parameters": [
+          {
+            "name": "codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Codes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Get Listing Day Close Prices Batch",
+        "description": "Return listing-day close prices for multiple stocks (public, used by index page JS).\n\nGET:  ?codes=07688,01511 (small batches)\nPOST: {\"codes\": [\"07688\", \"01511\", ...]} (large batches, avoids URL length limit)",
+        "operationId": "post_api_listing-day-close-prices-batch",
+        "parameters": [
+          {
+            "name": "codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Codes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/allotment-tiers/{code}": {
+      "get": {
+        "summary": "Get Allotment Tiers",
+        "description": "Return allotment tier data for a stock (public, used by page JS).",
+        "operationId": "get_api_allotment-tiers_code",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/prospectus": {
+      "get": {
+        "summary": "Get Prospectus",
+        "description": "Full prospectus info page data: prospectus details (incl. greenshoe,\nsubscription tiers, secondary listing), cornerstone investors, IPO financial\nstatements, IPO timeline, directors, syndicate, stabilizing manager.",
+        "operationId": "get_api_stocks_code_prospectus",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/allotment-result": {
+      "get": {
+        "summary": "Get Allotment Result",
+        "description": "Full allotment results page data: allotment summary (offer price,\noversubscription, international placing, greenshoe), international placing\nconcentration, cornerstone allocation + lock-up, and Pool A/B tiers.",
+        "operationId": "get_api_stocks_code_allotment-result",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/allottee-profile": {
+      "get": {
+        "summary": "Get Allottee Profile",
+        "description": "中签画像 (allottee profile): winner demographics parsed from the registrar\nallotment dataset — total lots, person/company split, region/nationality,\nprovince, gender, age histogram + pyramid, and HK ID letter/era/district.",
+        "operationId": "get_api_stocks_code_allottee-profile",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/announcements": {
+      "get": {
+        "summary": "Get Stock Announcements",
+        "description": "个股公告中心 (announcement center): all HKEXnews announcements for one\nstock, grouped by headline category with publish date and file URL.",
+        "operationId": "get_api_stocks_code_announcements",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/buyback": {
+      "get": {
+        "summary": "Get Stock Buyback",
+        "description": "回购明细 (per-stock buyback): share buyback records for one stock, newest\nfirst, with per-day shares/amount and aggregate totals.",
+        "operationId": "get_api_stocks_code_buyback",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/disclosure": {
+      "get": {
+        "summary": "Get Stock Disclosure",
+        "description": "增减持明细 (per-stock disclosure-of-interest): DI records for one stock,\nnewest first, with holder, capacity, event type, shares and pct.",
+        "operationId": "get_api_stocks_code_disclosure",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/predict-agent-grid/{code}": {
+      "get": {
+        "summary": "Get Predict Agent Grid",
+        "description": "Return pre-computed prediction grid for a given agent and stock.\n\nUsed by the allotment prediction page JS when switching agents.\nThe grid covers 18 oversub levels x 5 alpha levels for interpolation.\n\nQuery params:\n    agent: agent key, e.g. knn_calibrated, historical, knn_raw, ridge, etc.",
+        "operationId": "get_api_predict-agent-grid_code",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "agent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "knn_calibrated",
+              "title": "Agent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/predict/custom": {
+      "get": {
+        "summary": "Predict Custom",
+        "description": "Compute a single-point allotment prediction for arbitrary oversub/alpha.\n\nUnlike /api/stocks/{code}/predict (default params) and\n/api/predict-agent-grid/{code} (fixed 18x5 grid), this accepts any positive\noversub multiple and any alpha in [0,1], computing the result on demand so\nAI agents can query e.g. \"假设最终超购 300 倍\" directly.\n\nWhen oversub is omitted, defaults to cibo's predicted final oversubscription\nmultiple (model median blended with the margin-broker forecast).",
+        "operationId": "get_api_stocks_code_predict_custom",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "oversub",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Oversub"
+            }
+          },
+          {
+            "name": "alpha",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Alpha"
+            }
+          },
+          {
+            "name": "agent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "knn_calibrated",
+              "title": "Agent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-protocol": {
+      "get": {
+        "summary": "Agent Protocol",
+        "description": "Public discovery endpoint for AI agents.\n\nDescribes cibo's capabilities, authentication, and data categories\nso agents can self-onboard without API documentation on the website.",
+        "operationId": "get_.well-known_agent-protocol",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Capabilities",
+        "description": "Return all available API capabilities. Agents use this to discover what they can do.",
+        "operationId": "get_api",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check endpoint for monitoring and agent status.",
+        "operationId": "get_health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "summary": "User Me",
+        "description": "Return current user info from JWT token (shared with pcell.si).",
+        "operationId": "get_api_user_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/watchlist": {
+      "get": {
+        "summary": "User Watchlist",
+        "description": "Return the user's watchlist (list of stock codes).",
+        "operationId": "get_api_user_watchlist",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/preferences": {
+      "get": {
+        "summary": "User Preferences Get",
+        "description": "Return saved user preferences (JSON object).",
+        "operationId": "get_api_user_preferences",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "User Preferences Put",
+        "description": "Save user preferences (JSON body).",
+        "operationId": "put_api_user_preferences",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://cibo.hk"
+    }
+  ]
+}

@@ -3,8 +3,9 @@
 """Auto-sync cibo.hk public docs into this repo.
 
 Fetches the authoritative sources from cibo.hk and regenerates:
-  - llms.txt   (verbatim mirror of https://cibo.hk/llms.txt)
-  - README.md  (intro + llms.txt mirror + live MCP tool list + disclaimer)
+  - llms.txt     (verbatim mirror of https://cibo.hk/llms.txt)
+  - openapi.json (verbatim mirror of https://cibo.hk/api/openapi.json)
+  - README.md    (intro + llms.txt mirror + live MCP tool list + disclaimer)
 
 Runs in GitHub Actions on a schedule. Uses only the Python stdlib so the
 workflow has no pip dependencies.
@@ -15,6 +16,7 @@ import sys
 import urllib.request
 
 LLMS_URL = "https://cibo.hk/llms.txt"
+OPENAPI_URL = "https://cibo.hk/api/openapi.json"
 MCP_URL = "https://cibo.hk/mcp/"
 
 # Request timeout (seconds).
@@ -29,6 +31,10 @@ def _get(url, data=None, headers=None):
 
 def fetch_llms_txt() -> str:
     return _get(LLMS_URL)
+
+
+def fetch_openapi_json() -> str:
+    return _get(OPENAPI_URL)
 
 
 def fetch_mcp_tools():
@@ -83,6 +89,7 @@ def render_readme(llms_text: str, tool_count: int, tools: list) -> str:
     lines.append("- 网站：https://cibo.hk")
     lines.append("- 权威文档：https://cibo.hk/llms.txt （本 README 是其镜像，以 llms.txt 为准）")
     lines.append("- API 清单：https://cibo.hk/api/")
+    lines.append("- OpenAPI Schema：https://cibo.hk/api/openapi.json")
     lines.append("- MCP 端点：https://cibo.hk/mcp")
     lines.append("")
     lines.append("> 由熊猫证券 CEO JW 用 AI 辅助编程构建。预测港股 IPO 中签率（可调申购倍数与 α 分配系数），")
@@ -121,6 +128,12 @@ def render_readme(llms_text: str, tool_count: int, tools: list) -> str:
 
 def main():
     llms_text = fetch_llms_txt()
+    try:
+        openapi_text = fetch_openapi_json()
+    except Exception as e:
+        print(f"WARNING: openapi.json fetch failed ({e}); keeping existing snapshot",
+              file=sys.stderr)
+        openapi_text = None
     tool_count, tools = fetch_mcp_tools()
     if tool_count == 0:
         print("WARNING: tools/list returned 0 tools; README tool list will be empty",
@@ -130,10 +143,15 @@ def main():
 
     with open("llms.txt", "w", encoding="utf-8") as f:
         f.write(llms_text)
+    if openapi_text is not None:
+        with open("openapi.json", "w", encoding="utf-8") as f:
+            f.write(openapi_text)
     with open("README.md", "w", encoding="utf-8") as f:
         f.write(readme)
 
     print(f"llms.txt: {len(llms_text)} bytes")
+    if openapi_text is not None:
+        print(f"openapi.json: {len(openapi_text)} bytes")
     print(f"README.md: {len(readme)} bytes, {tool_count} tools")
 
 
