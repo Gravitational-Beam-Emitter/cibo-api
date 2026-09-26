@@ -132,6 +132,32 @@ Agent protocol: https://cibo.hk/.well-known/agent-protocol
 
 ---
 
+## Field Semantics (口径)
+
+Field names are ambiguous across endpoints. Before reporting a number,
+check which caliber it uses:
+
+- **hit_rate** = overall allotment rate = 获配申请数 ÷ 有效申请数
+  (successful applications ÷ valid applications). NOT the one-hand rate.
+- **one_hand_hit_rate** = hit rate for the smallest (one-hand) tier only.
+- **allotment_pct** (per tier) = 获配股份 ÷ 申请股份, i.e. the share-allotment
+  ratio for that tier, not a probability. To judge "did this applicant win",
+  use winner_count / applicant_count, not allotment_pct.
+- **guaranteed_lots** = guaranteed minimum allotted shares, NOT "surely win one
+  lot" (稳中一手). Do not translate it as such.
+- **reallocation** is overloaded: in allotment results it is the raw clawback/
+  重新分配 flag from the PDF; in per-stock analysis it means *discretionary*
+  reallocation beyond the standard clawback. The two can disagree.
+- **Dates** are YYYYMMDD integers (e.g. 20260930); 0 / empty = unknown.
+- **predict vs actual**: predict_allotment / get_prediction are model forecasts;
+  get_allotment_result / get_allotment_tiers are actual published results.
+  Never mix the two.
+- **ok:false contract**: every tool returns ok:false + error when the stock is
+  unknown or the data does not exist. ok:true never means "complete" — always
+  check the payload for missing / zero fields.
+
+---
+
 ## Site Pages (GEO)
 
 Static SSR pages for crawlers. Locales: zh-CN / zh-HK / en. `{code}` = 5-digit stock code.

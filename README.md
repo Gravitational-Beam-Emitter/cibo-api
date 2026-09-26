@@ -152,6 +152,32 @@ Agent protocol: https://cibo.hk/.well-known/agent-protocol
 
 ---
 
+## Field Semantics (口径)
+
+Field names are ambiguous across endpoints. Before reporting a number,
+check which caliber it uses:
+
+- **hit_rate** = overall allotment rate = 获配申请数 ÷ 有效申请数
+  (successful applications ÷ valid applications). NOT the one-hand rate.
+- **one_hand_hit_rate** = hit rate for the smallest (one-hand) tier only.
+- **allotment_pct** (per tier) = 获配股份 ÷ 申请股份, i.e. the share-allotment
+  ratio for that tier, not a probability. To judge "did this applicant win",
+  use winner_count / applicant_count, not allotment_pct.
+- **guaranteed_lots** = guaranteed minimum allotted shares, NOT "surely win one
+  lot" (稳中一手). Do not translate it as such.
+- **reallocation** is overloaded: in allotment results it is the raw clawback/
+  重新分配 flag from the PDF; in per-stock analysis it means *discretionary*
+  reallocation beyond the standard clawback. The two can disagree.
+- **Dates** are YYYYMMDD integers (e.g. 20260930); 0 / empty = unknown.
+- **predict vs actual**: predict_allotment / get_prediction are model forecasts;
+  get_allotment_result / get_allotment_tiers are actual published results.
+  Never mix the two.
+- **ok:false contract**: every tool returns ok:false + error when the stock is
+  unknown or the data does not exist. ok:true never means "complete" — always
+  check the payload for missing / zero fields.
+
+---
+
 ## Site Pages (GEO)
 
 Static SSR pages for crawlers. Locales: zh-CN / zh-HK / en. `{code}` = 5-digit stock code.
@@ -198,20 +224,20 @@ Full-market financials:
 | `get_a_share_etf_flow` | A-share ETF capital flow overview: merged proxy, ETF inflow, margin balance history, sectors and ETF breakdown. |
 | `get_ab_comparison` | A-tail vs B-head comparison matrix (oversub, expected lots, capital efficiency). |
 | `get_agent_grid` | Pre-computed 18 oversub x 5 alpha prediction grid for a stock and agent. |
-| `get_allotment_result` | Full allotment results page data for a stock: allotment summary (offer price, oversubscription, international placing, greenshoe), international placing concentration, cornerstone allocation + lock-up, and Pool A/B tiers. |
-| `get_allotment_tiers` | Actual Pool A/B allotment tiers for a stock: applied shares, allotted shares, hit pct, and expected lots per tier. |
+| `get_allotment_result` | Full allotment results page data for a stock: allotment summary (offer price, oversubscription, international placing, greenshoe), international placing concentration, cornerstone allocation + lock-up, and Pool A/B tiers. Returns ok:false when the stock is unknown or has no published allotment result yet (pre-listing stocks return placeholder tiers, not real data). `summary.reallocation` is the raw clawback/重新分配 flag from the allotment PDF — it does NOT mean discretionary reallocation. |
+| `get_allotment_tiers` | Actual Pool A/B allotment tiers for a stock: applied shares, allotted shares, hit pct, and expected lots per tier. Returns ok:false when the stock has no published allotment result. |
 | `get_allottee_profile` | 中签画像 (allottee profile): winner demographics parsed from the registrar allotment dataset — total lots, person/company split, region/nationality, province, gender, age histogram + pyramid, and HK ID letter/era/district. |
 | `get_blog_posts` | Published blog posts (赛博畅想) with title, excerpt, author, tags, date. |
-| `get_buyback_ranking` | Share buyback ranking across listed companies. |
+| `get_buyback_ranking` | Share buyback ranking across listed companies. Paginated (page/page_size). |
 | `get_cmp_overview` | Cross-market comparison overview for peer stock context. |
 | `get_coinvestment_network` | Cornerstone investor co-investment network rankings. |
 | `get_cornerstone_ranking` | Cornerstone investor rankings by IPO involvement. |
-| `get_corporate_actions` | Corporate actions summary (buybacks, dividends, placements, etc.). |
-| `get_director_changes` | Director appointment / resignation / role changes list. |
+| `get_corporate_actions` | Corporate actions summary (buybacks, dividends, placements, etc.). Paginated. |
+| `get_director_changes` | Director appointment / resignation / role changes list. Paginated. |
 | `get_director_roster` | Per-stock director and executive roster (names, bio, roles). |
-| `get_disclosure_interest` | Disclosure-of-interest (增减持) ranking across listed companies. |
+| `get_disclosure_interest` | Disclosure-of-interest (增减持) records, newest first. Paginated. event: 'buy', 'sell', or '' for both. |
 | `get_dual_listing_price` | Dual-listing cross-market mapping for a stock: A+H via ah_stock_mapping, other markets via prospectus_details.secondary_markets, plus the IPO-time H-share premium/discount (ah_premium_at_ipo). |
-| `get_earnings_calendar` | Earnings calendar (final/interim/quarterly results, dividends, profit warnings, board dates). |
+| `get_earnings_calendar` | Earnings calendar (final/interim/quarterly results, dividends, profit warnings, board dates). Paginated. |
 | `get_financial_data` | Per-stock financial statements grouped by period (revenue, profit, eps, etc.) from post-listing financial data. |
 | `get_flash_events` | Machine-readable flash-event feed (ipo_launch / allotment_result / listing / inclusion / prediction). Filter by stock_code. |
 | `get_frozen_calendar` | Frozen capital calendar: daily date series, max frozen, milestones. |
@@ -241,9 +267,9 @@ Full-market financials:
 | `get_stock_inclusion` | Single-stock Stock Connect inclusion detail across review periods. |
 | `get_stock_narrative` | AI-generated narrative (zh/en) summarizing a stock's IPO characteristics. |
 | `get_stock_ohlc` | Daily OHLC candlestick data (~400 days) from Tencent Finance. |
-| `get_stock_overview` | Full per-stock IPO analysis: subscription rates, allotment tiers, PnL scenarios, CCASS demographics, narrative, plus cross-market context. |
-| `get_stock_summary` | Lightweight stock summary: key stats and tier classification (fast). |
-| `get_suspension_resumption` | Trading suspension / resumption announcements list. |
+| `get_stock_overview` | Full per-stock IPO analysis: subscription rates, allotment tiers, PnL scenarios, CCASS demographics, narrative, plus cross-market context. Returns ok:false when the stock code is unknown. Note: the analysis `data.s.reallocation` flag means *discretionary* reallocation (not the raw clawback flag), and may disagree with get_allotment_result's summary.reallocation. |
+| `get_stock_summary` | Lightweight stock summary: key stats and tier classification (fast). Returns ok:false when the stock code is unknown or has no data. Field note: `summary.reallocation` is '是' only when there was a *discretionary* reallocation (shares moved beyond the standard clawback). For the raw clawback/重新分配 flag from the allotment PDF, use get_allotment_result -> summary.reallocation instead — the two are different and may disagree. |
+| `get_suspension_resumption` | Trading suspension / resumption announcements list. Paginated. type_key: 'suspension', 'resumption', or '' for both. |
 | `get_underwriter_ranking` | Underwriter institution rankings by IPO involvement. |
 | `get_us_corp_actions` | US corporate actions (8-K): M&A, earnings, dividends, splits, buybacks, etc. |
 | `get_us_listings` | US IPO / SPAC new listing calendar. |
