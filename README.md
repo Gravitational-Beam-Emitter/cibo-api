@@ -6,6 +6,7 @@
 - 网站：https://cibo.hk
 - 权威文档：https://cibo.hk/llms.txt （本 README 是其镜像，以 llms.txt 为准）
 - API 清单：https://cibo.hk/api/
+- OpenAPI Schema：https://cibo.hk/api/openapi.json
 - MCP 端点：https://cibo.hk/mcp
 
 > 由熊猫证券 CEO JW 用 AI 辅助编程构建。预测港股 IPO 中签率（可调申购倍数与 α 分配系数），
@@ -64,6 +65,14 @@ Repo: https://github.com/pcell-si/pcell-sdk
   }
 }
 ```
+
+### OpenAPI Schema (machine-readable)
+
+Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
+
+- **URL:** https://cibo.hk/api/openapi.json
+- **Scope:** public endpoints only (no internal/admin/community routes).
+  Generated offline by gen_openapi.py; not FastAPI's live openapi_url.
 
 ---
 

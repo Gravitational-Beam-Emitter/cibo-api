@@ -45,6 +45,14 @@ Repo: https://github.com/pcell-si/pcell-sdk
 }
 ```
 
+### OpenAPI Schema (machine-readable)
+
+Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
+
+- **URL:** https://cibo.hk/api/openapi.json
+- **Scope:** public endpoints only (no internal/admin/community routes).
+  Generated offline by gen_openapi.py; not FastAPI's live openapi_url.
+
 ---
 
 ## API Endpoints (47 total)
