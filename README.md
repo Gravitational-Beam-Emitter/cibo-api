@@ -50,7 +50,7 @@ Repo: https://github.com/pcell-si/pcell-sdk
 
 ### MCP Server (remote Streamable HTTP, no install)
 
-57 tools covering the whole site's data: allotment prediction, stocks, inclusion, rankings, A/B comparison, market data, flash events, disclosures (buyback / interest / suspension / earnings / directors / corporate actions), full-market financials and company directory, prices, registrar research, blog posts, hynix arbitrage, A-share ETF flow, and data-center macro / US-market data.
+58 tools covering the whole site's data: allotment prediction, stocks, inclusion, rankings, A/B comparison, market data, flash events, disclosures (buyback / interest / suspension / earnings / directors / corporate actions), full-market financials and company directory, prices, registrar research, blog posts, hynix arbitrage, A-share ETF flow, and data-center macro / US-market data.
 
 - **Endpoint:** https://cibo.hk/mcp
 - **Transport:** streamable-http
@@ -154,7 +154,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 3. **Analyze** — GET /api/stocks/{code}/overview for full per-stock analysis
 4. **Predict** — GET /api/stocks/{code}/predict for allotment forecast
 5. **Compare** — GET /api/stocks/compare?codes=A,B to compare multiple stocks
-6. **MCP** — Connect to https://cibo.hk/mcp for 57 tools (no install)
+6. **MCP** — Connect to https://cibo.hk/mcp for 58 tools (no install)
 
 Full API reference: https://cibo.hk/api/
 Agent protocol: https://cibo.hk/.well-known/agent-protocol
@@ -223,7 +223,7 @@ Full-market financials:
 
 ---
 
-## MCP 工具清单（57 个）
+## MCP 工具清单（58 个）
 
 工具清单由 MCP `tools/list` 实时生成。
 
@@ -286,6 +286,7 @@ Full-market financials:
 | `list_stocks` | List all tracked IPO stocks with basic info (code, name, listing date). |
 | `predict_allotment` | Predict IPO allotment success for arbitrary final oversubscription multiple and allocation-method alpha. alpha=None uses the agent's own recommended alpha; oversub=None uses cibo's predicted final multiple. Returns Pool A/B tier expected lots and hit pct. |
 | `search_stocks` | Fuzzy search stocks by code, English name, or simplified/traditional Chinese name (cross-script via OpenCC when available). |
+| `subscription_cost` | IPO subscription cost and break-even for one stock at a given lot count. Combines the KNN expected-lot forecast with the HK sell-side tax schedule (stamp duty, trading fee, transaction levy, FRC levy) to return subscription amount, margin interest, expected allocated lots, total cost, and the break-even move/price. oversub=None uses cibo's predicted final multiple; interest_days=None uses the frozen-capital calendar window (offer end -> listing date minus 2 working days). |
 
 ---
 
