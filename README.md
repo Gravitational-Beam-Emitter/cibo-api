@@ -76,7 +76,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 
 ---
 
-## API Endpoints (47 total)
+## API Endpoints (48 total)
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -99,6 +99,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 | GET | `/api/stocks/{code}/predict` | public | Full allotment prediction data (default predicted oversub/alpha) backing the prediction page. |
 | GET | `/api/stocks/{code}/predict/custom` | public | On-demand single-point allotment prediction for arbitrary parameters. Query: ?oversub=300&alpha=0.5&agent=knn_calibrated. |
 | GET | `/api/predict-agent-grid/{code}` | public | Pre-computed prediction grid (18 oversub x 5 alpha) for interpolation. |
+| POST | `/api/stocks/{code}/predict/batch` | public | Exact single-point predictions for a batch of (oversub, alpha) pairs in one request. Body: {"points":[{"oversub":300,"alpha":0.5}],"agent":"knn_calibrated"} (<=64 points). |
 | GET | `/api/listing-day-close-price/{code}` | public | First-day closing price for a single stock. |
 | GET|POST | `/api/listing-day-close-prices-batch` | public | Batch first-day closing prices. GET: ?codes=07688,01511 POST: {"codes":[...]} |
 | GET | `/api/market-insights` | public | Cross-IPO market insights, trends, and aggregate analysis. |
@@ -125,8 +126,8 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 | GET|PUT | `/api/user/preferences` | pcell JWT | Get or update saved user preferences JSON. |
 | GET | `/api/` | public | API discovery root: lists all endpoints with methods, auth, and return types. |
 | GET | `/.well-known/agent-protocol` | public | Machine-readable agent protocol: service description, auth methods, data categories, recommended agent onboarding flow. |
-| GET | `/health` | public | Health check: uptime, DB stats, agent status, cache warmth, pipeline health. |
-| GET | `/api/agents` | internal | Internal agent heartbeat status and duration (ops telemetry). |
+| GET | `/health` | public | Health check: uptime, DB stats, agent status, cache warmth, pipeline health (no pid or internal error messages). |
+| GET | `/api/agents` | public | Agent heartbeat status, last run, age and duration (public leaderboard; internal error messages omitted). |
 
 ## Query Parameters
 ### /api/stocks/oversub
@@ -140,6 +141,9 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 ### /api/stocks/{code}/predict/custom
 - `oversub` — final oversubscription multiple (optional, >0; omitted -> cibo predicted oversub)
 - `alpha` — allocation-method coefficient in [0,1] (optional; omitted -> agent's recommended alpha)
+- `agent` — agent key (optional, default knn_calibrated)
+### /api/stocks/{code}/predict/batch
+- `points` — list of {oversub, alpha}
 - `agent` — agent key (optional, default knn_calibrated)
 ### /api/stocks/full-market
 - `search` — optional substring on code/name
