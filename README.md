@@ -76,7 +76,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 
 ---
 
-## API Endpoints (48 total)
+## API Endpoints (53 total)
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -84,6 +84,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 | GET | `/api/stocks/oversub` | public | Batch oversubscription + frozen capital for all stocks with allotment data. Query: ?year=2026. |
 | GET | `/api/flash-events` | public | Derived flash-event feed (ipo_launch / allotment_result / listing / inclusion / prediction) as structured JSON for AI crawlers. Query: ?locale=zh-CN&limit=50&stock_code=07688. |
 | GET | `/api/stocks/index` | public | Stock cards grouped by index with filtering, pagination, search. |
+| GET | `/api/stocks/homepage` | public | Homepage stock cards: upcoming (prelist) and recently listed stocks with status. |
 | GET | `/api/stocks/{code}/overview` | public | Full per-stock IPO analysis: subscription rates, allotment tiers, PnL scenarios, CCASS demographics. |
 | GET | `/api/stocks/{code}/prospectus` | public | Full prospectus info page data: prospectus details (offer price, mechanism, greenshoe, secondary listing), cornerstone investors, and IPO financial statements. |
 | GET | `/api/stocks/{code}/allotment-result` | public | Full allotment results page data: allotment summary (incl. international placing, greenshoe), placing concentration, cornerstone allocation + lock-up, Pool A/B tiers. |
@@ -110,6 +111,7 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 | GET | `/api/cache/rankings/underwriters` | public | Underwriter institution rankings by IPO involvement. |
 | GET | `/api/cache/rankings/cornerstone` | public | Cornerstone investor rankings. |
 | GET | `/api/cache/rankings/coinvestment` | public | Co-investment rankings. |
+| GET | `/api/cache/rankings/stabilizing` | public | Stabilizing manager (稳价人) institution rankings by IPO involvement. |
 | GET | `/api/cache/stocks/{code}/analysis` | public | Pre-computed per-stock analysis (tier data, demographic distributions, HK letter/era breakdowns). |
 | GET | `/api/cache/ab` | public | A-tail vs B-head comparison matrix. |
 | GET | `/api/cache/frozen-calendar` | public | Pre-computed frozen capital calendar (dates, series, max_daily). |
@@ -120,9 +122,12 @@ Static, whitelisted OpenAPI 3.0 schema for code generators / ChatGPT Actions:
 | GET | `/api/stocks/full-market` | public | Directory of all HK-listed companies (code, zh/en name, board, isin). Query: ?search=&limit=200. |
 | GET | `/api/hynix/snapshot` | public | SK Hynix cross-market arbitrage snapshot (instruments with premium_pct, FX rates, base price). |
 | GET | `/api/a-share-etf/overview` | public | A-share ETF capital flow overview (merged proxy, ETF inflow, margin). Query: ?limit=60. |
+| GET | `/api/dual-listing-price/{stock_code}` | public | Dual-listing (A+H / secondary) cross-market price and premium/discount. |
+| GET | `/api/stocks/batch-inclusion-analysis` | public | Batch Stock Connect inclusion analysis for all candidate stocks (full data as JSON). |
+| GET | `/api/stocks/{code}/inclusion-analysis` | public | Per-stock Stock Connect inclusion analysis across all review periods. |
 | GET | `/api/user/me` | optional JWT | Current user info from JWT. Returns {user: null} when unauthenticated. |
 | GET | `/api/user/watchlist` | pcell JWT | User's watchlist as array of stock codes. |
-| POST | `/api/user/watchlist/{code}` | pcell JWT | Toggle a stock in/out of the watchlist. Returns {in_watchlist: bool}. |
+| POST | `/api/user/watchlist/{stock_code}` | pcell JWT | Toggle a stock in/out of the watchlist. Returns {in_watchlist: bool}. |
 | GET|PUT | `/api/user/preferences` | pcell JWT | Get or update saved user preferences JSON. |
 | GET | `/api/` | public | API discovery root: lists all endpoints with methods, auth, and return types. |
 | GET | `/.well-known/agent-protocol` | public | Machine-readable agent protocol: service description, auth methods, data categories, recommended agent onboarding flow. |

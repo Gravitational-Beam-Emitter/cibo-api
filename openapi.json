@@ -123,6 +123,45 @@
         }
       }
     },
+    "/api/stocks/homepage": {
+      "get": {
+        "summary": "Stocks Homepage",
+        "description": "Return prelist + recent stocks for homepage. Lightweight, date-rule-based.\n\nOnly queries stocks that are candidates for prelist or recent status,\navoiding the full 350+ stock enrichment pipeline. Used by index page\nto render the upcoming/recent IPO sections quickly.",
+        "operationId": "get_api_stocks_homepage",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/stocks/index": {
       "get": {
         "summary": "Stocks Index",
@@ -302,7 +341,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewResponse"
+                }
               }
             }
           },
@@ -340,7 +381,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryResponse"
+                }
               }
             }
           },
@@ -454,7 +497,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/PredictResponse"
+                }
               }
             }
           },
@@ -692,6 +737,22 @@
         }
       }
     },
+    "/api/cache/rankings/stabilizing": {
+      "get": {
+        "summary": "Cache Stabilizing Rank",
+        "operationId": "get_api_cache_rankings_stabilizing",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cache/status": {
       "get": {
         "summary": "Cache Status",
@@ -851,6 +912,44 @@
         }
       }
     },
+    "/api/dual-listing-price/{stock_code}": {
+      "get": {
+        "summary": "Get Dual Listing Price",
+        "description": "Return real-time price for A+H and other dual-listed stocks.\n\nFetches the other-market price and exchange rate, computes H-share\noffer price premium/discount relative to the other market.\nSupports A-shares (Tencent), IDX/Indonesia (Yahoo Finance), extensible.",
+        "operationId": "get_api_dual-listing-price_stock_code",
+        "parameters": [
+          {
+            "name": "stock_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stock Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/listing-day-close-prices-batch": {
       "get": {
         "summary": "Get Listing Day Close Prices Batch",
@@ -948,7 +1047,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AllotmentTiersResponse"
+                }
               }
             }
           },
@@ -996,7 +1097,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ProspectusResponse"
+                }
               }
             }
           },
@@ -1034,7 +1137,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AllotmentResultResponse"
+                }
               }
             }
           },
@@ -1082,7 +1187,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AllotteeProfileResponse"
+                }
               }
             }
           },
@@ -1371,6 +1478,44 @@
         }
       }
     },
+    "/api/stocks/{code}/predict/batch": {
+      "post": {
+        "summary": "Predict Batch",
+        "description": "Compute exact single-point predictions for a batch of (oversub, alpha) pairs.\n\nBacks the prediction page's debounced exact rendering so the on-page numbers\nmatch /predict/custom and the MCP predict_allotment tool (no client-side grid\ninterpolation). Body: {\"points\": [{\"oversub\": 300, \"alpha\": 0.5}, ...],\n\"agent\": \"knn_calibrated\"} — capped at 64 points per request.",
+        "operationId": "post_api_stocks_code_predict_batch",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/.well-known/agent-protocol": {
       "get": {
         "summary": "Agent Protocol",
@@ -1430,6 +1575,60 @@
         }
       }
     },
+    "/api/agents": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List Agents",
+        "description": "List agents ranked by annotation acceptance rate. Agent discovery endpoint.",
+        "operationId": "get_api_agents",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "min_annotations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1,
+              "title": "Min Annotations"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/user/me": {
       "get": {
         "summary": "User Me",
@@ -1458,6 +1657,44 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/watchlist/{stock_code}": {
+      "post": {
+        "summary": "User Watchlist Toggle",
+        "description": "Toggle a stock in/out of the user's watchlist. Returns new state.",
+        "operationId": "post_api_user_watchlist_stock_code",
+        "parameters": [
+          {
+            "name": "stock_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stock Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1495,10 +1732,267 @@
           }
         }
       }
+    },
+    "/api/stocks/batch-inclusion-analysis": {
+      "get": {
+        "summary": "Batch Inclusion Analysis",
+        "description": "Batch inclusion analysis for all candidate stocks — returns full data as JSON.",
+        "operationId": "get_api_stocks_batch-inclusion-analysis",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stocks/{code}/inclusion-analysis": {
+      "get": {
+        "summary": "Single Stock Inclusion Analysis",
+        "description": "Single-stock inclusion analysis across all review periods.",
+        "operationId": "get_api_stocks_code_inclusion-analysis",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AllotmentResultResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "concentration": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Concentration"
+          },
+          "cornerstone": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cornerstone"
+          },
+          "tiers": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tiers"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "AllotmentResultResponse"
+      },
+      "AllotmentTiersResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "tiers_a": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tiers A"
+          },
+          "tiers_b": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tiers B"
+          },
+          "lot_size": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lot Size"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "AllotmentTiersResponse"
+      },
+      "AllotteeProfileResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "AllotteeProfileResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1511,6 +2005,239 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "OverviewResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "cmp": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cmp"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "OverviewResponse"
+      },
+      "PredictResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "PredictResponse"
+      },
+      "ProspectusResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "cornerstone": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cornerstone"
+          },
+          "directors": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Directors"
+          },
+          "syndicate_parties": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Syndicate Parties"
+          },
+          "financial_view": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financial View"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ProspectusResponse"
+      },
+      "SummaryResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "s": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "S"
+          },
+          "tier": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "SummaryResponse"
       },
       "ValidationError": {
         "properties": {
