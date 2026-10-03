@@ -1371,9 +1371,25 @@
             "required": false,
             "schema": {
               "type": "string",
+              "description": "Prediction model agent.",
+              "enum": [
+                "knn_calibrated",
+                "historical",
+                "knn_raw",
+                "ridge",
+                "powerlaw",
+                "entropy",
+                "kernel",
+                "cart",
+                "statespace",
+                "evt",
+                "mixture",
+                "bradleyterry"
+              ],
               "default": "knn_calibrated",
               "title": "Agent"
-            }
+            },
+            "description": "Prediction model agent."
           }
         ],
         "responses": {
@@ -1381,7 +1397,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/CustomPredictResponse"
+                }
               }
             }
           },
@@ -1420,14 +1438,17 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "number"
+                  "type": "number",
+                  "exclusiveMinimum": 0
                 },
                 {
                   "type": "null"
                 }
               ],
+              "description": "Oversubscription multiple (must be > 0). Omit for cibo's predicted final multiple.",
               "title": "Oversub"
-            }
+            },
+            "description": "Oversubscription multiple (must be > 0). Omit for cibo's predicted final multiple."
           },
           {
             "name": "alpha",
@@ -1436,14 +1457,18 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "number"
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
                 },
                 {
                   "type": "null"
                 }
               ],
+              "description": "Allocation-strategy coefficient in [0, 1]. Omit for the agent's default.",
               "title": "Alpha"
-            }
+            },
+            "description": "Allocation-strategy coefficient in [0, 1]. Omit for the agent's default."
           },
           {
             "name": "agent",
@@ -1451,9 +1476,25 @@
             "required": false,
             "schema": {
               "type": "string",
+              "description": "Prediction model agent.",
+              "enum": [
+                "knn_calibrated",
+                "historical",
+                "knn_raw",
+                "ridge",
+                "powerlaw",
+                "entropy",
+                "kernel",
+                "cart",
+                "statespace",
+                "evt",
+                "mixture",
+                "bradleyterry"
+              ],
               "default": "knn_calibrated",
               "title": "Agent"
-            }
+            },
+            "description": "Prediction model agent."
           }
         ],
         "responses": {
@@ -1461,7 +1502,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/CustomPredictResponse"
+                }
               }
             }
           },
@@ -1499,7 +1542,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/CustomPredictResponse"
+                }
               }
             }
           },
@@ -1992,6 +2037,58 @@
         "additionalProperties": true,
         "type": "object",
         "title": "AllotteeProfileResponse"
+      },
+      "CustomPredictResponse": {
+        "properties": {
+          "ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "disclaimer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclaimer"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "CustomPredictResponse",
+        "description": "Envelope for /predict/custom, /predict-agent-grid and /predict/batch.\n\nThe tier-level payload (tiers_甲 / tiers_乙 / summary / predicted_apps …)\nstays untyped via extra=\"allow\" so validation never filters a response."
       },
       "HTTPValidationError": {
         "properties": {
