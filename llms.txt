@@ -188,9 +188,9 @@ Disclosure (HKEXnews Phase 1):
 - 供股配售/股本变动: https://cibo.hk/zh-CN/corporate-actions.html
 
 Per-stock disclosure pages:
-- 公告中心: https://cibo.hk/zh-CN/announcement-{code}.html
-- 回购明细: https://cibo.hk/zh-CN/buyback-{code}.html
-- 增减持明细: https://cibo.hk/zh-CN/disclosure-{code}.html
+- 新闻（快讯+公告）: https://cibo.hk/zh-CN/news-{code}.html; 快讯 https://cibo.hk/zh-CN/news-flash-{code}.html; 公告 https://cibo.hk/zh-CN/announcement-{code}.html
+- 股东回报（派息+回购）: https://cibo.hk/zh-CN/stock-financial-{code}.html?tab=shareholder_return
+- 股东/内部人士: https://cibo.hk/zh-CN/shareholder-{code}.html, https://cibo.hk/zh-CN/shareholder-insiders-{code}.html
 
 IPO allotment:
 - 首页: https://cibo.hk/zh-CN/index.html
@@ -199,7 +199,7 @@ IPO allotment:
 
 Derived flash events (Cibo快讯):
 - Cibo快讯流: https://cibo.hk/zh-CN/flash-news.html
-- 个股Cibo快讯: https://cibo.hk/zh-CN/flash-news-{code}.html
+- 新股Cibo快讯: https://cibo.hk/zh-CN/flash-news-{code}.html (IPO stocks; others: news-flash-{code}.html)
 - 快讯 JSON feed: https://cibo.hk/api/flash-events?locale=zh-CN&limit=50
   (structured derived events: ipo_launch / allotment_result / listing /
    inclusion / prediction / buyback / earnings / dividend / disclosure_interest;
