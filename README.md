@@ -226,6 +226,12 @@ Derived flash events (Cibo快讯):
    inclusion / prediction / buyback / earnings / dividend / disclosure_interest;
    each with stock_code, summary, metrics, url)
 
+Discover:
+- 全球市场·港股: https://cibo.hk/zh-CN/markets/hk.html (ETF 行情、涨跌分布、领涨行业、大幅波动、排行榜 ?rank=gainers|losers|main|gem|ipo|etf|turnover)
+- 行业热力图: https://cibo.hk/zh-CN/market-heatmap.html?market=hk&universe=all (per-stock tiles: ?sector=银行)
+- 财经日历: https://cibo.hk/zh-CN/market-calendar.html
+- 行业分类说明: https://cibo.hk/zh-CN/learn/industry-classification.html
+
 Full-market financials:
 - 港股公司目录: https://cibo.hk/zh-CN/all-hk-stocks.html
 - 单股财务: https://cibo.hk/zh-CN/stock-financial-{code}.html
