@@ -54,7 +54,7 @@ Repo: https://github.com/pcell-si/pcell-sdk
 
 - **Endpoint:** https://cibo.hk/mcp
 - **Transport:** streamable-http
-- **Description:** Remote Streamable HTTP MCP server for cibo.hk — lets AI agents query HK IPO allotment, predictions, prospectus details, allotment results (incl. international placing), inclusion, rankings, disclosures, financials, registrar, blog, full-market directory, hynix arbitrage, A-share ETF flow, and data-center macro/US-market data directly.
+- **Description:** cibo.hk's HK IPO engine — public, verifiable, and overridable layer by layer: every forecast (oversubscription multiple, allocation-method α, allotment matrix) ships a cibo default you can replace with your own parameters, so the engine returns your scenario rather than a verdict. Query HK IPO allotment, predictions, prospectus details, allotment results (incl. international placing), inclusion, rankings, disclosures, financials, registrar, blog, full-market directory, hynix arbitrage, A-share ETF flow, and data-center macro/US-market data directly.
 
 ```json
 {
